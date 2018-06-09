@@ -170,7 +170,8 @@ extern "C" {
     fn LogiLedStopEffects();
 
     //Per-key functions => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
-    // bool LogiLedSetLightingFromBitmap(unsigned char bitmap[]);
+    #[link_name = "?LogiLedSetLightingFromBitmap@@YA_NQEAE@Z"]
+    fn LogiLedSetLightingFromBitmap(bitmap: *const u8) -> bool;
     // bool LogiLedSetLightingForKeyWithScanCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
     // bool LogiLedSetLightingForKeyWithHidCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
     // bool LogiLedSetLightingForKeyWithQuartzCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
@@ -224,8 +225,17 @@ fn main() {
         LogiLedSaveCurrentLighting();
         LogiLedSetLighting(0, 0, 0);
 
-        LogiLedFlashSingleKey(KeyName::Z, 100, 0, 0, 0, 300);
-        LogiLedPulseSingleKey(KeyName::X, 0, 0, 0, 100, 100, 0, 500, true);
+        let mut bitmap = [0; 504];
+        for (i, bytes) in bitmap.chunks_mut(4).enumerate() {
+            bytes[0] = (i as f64 / 126.0 * 255.0) as u8;
+            bytes[1] = (255.0 - (i as f64 / 126.0 * 255.0)) as u8;
+            bytes[3] = 255;
+        }
+
+        // println!("{:?}", &bitmap[..]);
+        // LogiLedFlashSingleKey(KeyName::Z, 100, 0, 0, 0, 300);
+        // LogiLedPulseSingleKey(KeyName::X, 0, 0, 0, 100, 100, 0, 500, true);
+        println!("{}", LogiLedSetLightingFromBitmap(bitmap.as_ptr()));
         loop {}
 
         // LogiLedStopEffects();
