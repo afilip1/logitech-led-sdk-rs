@@ -175,7 +175,13 @@ extern "C" {
     // bool LogiLedSetLightingForKeyWithScanCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
     // bool LogiLedSetLightingForKeyWithHidCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
     // bool LogiLedSetLightingForKeyWithQuartzCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
-    // bool LogiLedSetLightingForKeyWithKeyName(LogiLed::KeyName keyName, int redPercentage, int greenPercentage, int bluePercentage);
+    #[link_name = "?LogiLedSetLightingForKeyWithKeyName@@YA_NW4KeyName@LogiLed@@HHH@Z"]
+    fn LogiLedSetLightingForKeyWithKeyName(
+        keyName: KeyName,
+        redPercentage: i32,
+        greenPercentage: i32,
+        bluePercentage: i32,
+    ) -> bool;
     // bool LogiLedSaveLightingForKey(LogiLed::KeyName keyName);
     // bool LogiLedRestoreLightingForKey(LogiLed::KeyName keyName);
     // bool LogiLedExcludeKeysFromBitmap(LogiLed::KeyName *keyList, int listCount);
@@ -232,10 +238,13 @@ fn main() {
             bytes[3] = 255;
         }
 
+        // LogiLedPulseSingleKey(KeyName::GLogo, 100, 0, 0, 0, 0, 0, 1000, true);
+
         // println!("{:?}", &bitmap[..]);
         // LogiLedFlashSingleKey(KeyName::Z, 100, 0, 0, 0, 300);
         // LogiLedPulseSingleKey(KeyName::X, 0, 0, 0, 100, 100, 0, 500, true);
         println!("{}", LogiLedSetLightingFromBitmap(bitmap.as_ptr()));
+        LogiLedSetLightingForKeyWithKeyName(KeyName::F, 100, 0, 100);
         loop {}
 
         // LogiLedStopEffects();
