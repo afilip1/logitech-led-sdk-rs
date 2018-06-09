@@ -1,27 +1,25 @@
-#![allow(dead_code)]
+pub const LOGI_LED_BITMAP_WIDTH: i32 = 21;
+pub const LOGI_LED_BITMAP_HEIGHT: i32 = 6;
+pub const LOGI_LED_BITMAP_BYTES_PER_KEY: i32 = 4;
 
-const LOGI_LED_BITMAP_WIDTH: i32 = 21;
-const LOGI_LED_BITMAP_HEIGHT: i32 = 6;
-const LOGI_LED_BITMAP_BYTES_PER_KEY: i32 = 4;
-
-const LOGI_LED_BITMAP_SIZE: i32 =
+pub const LOGI_LED_BITMAP_SIZE: i32 =
     LOGI_LED_BITMAP_WIDTH * LOGI_LED_BITMAP_HEIGHT * LOGI_LED_BITMAP_BYTES_PER_KEY;
 
-const LOGI_LED_DURATION_INFINITE: i32 = 0;
+pub const LOGI_LED_DURATION_INFINITE: i32 = 0;
 
-const LOGI_DEVICETYPE_MONOCHROME_ORD: i32 = 0;
-const LOGI_DEVICETYPE_RGB_ORD: i32 = 1;
-const LOGI_DEVICETYPE_PERKEY_RGB_ORD: i32 = 2;
+pub const LOGI_DEVICETYPE_MONOCHROME_ORD: i32 = 0;
+pub const LOGI_DEVICETYPE_RGB_ORD: i32 = 1;
+pub const LOGI_DEVICETYPE_PERKEY_RGB_ORD: i32 = 2;
 
-const LOGI_DEVICETYPE_MONOCHROME: i32 = 1 << LOGI_DEVICETYPE_MONOCHROME_ORD;
-const LOGI_DEVICETYPE_RGB: i32 = 1 << LOGI_DEVICETYPE_RGB_ORD;
-const LOGI_DEVICETYPE_PERKEY_RGB: i32 = 2 << LOGI_DEVICETYPE_PERKEY_RGB_ORD;
+pub const LOGI_DEVICETYPE_MONOCHROME: i32 = 1 << LOGI_DEVICETYPE_MONOCHROME_ORD;
+pub const LOGI_DEVICETYPE_RGB: i32 = 1 << LOGI_DEVICETYPE_RGB_ORD;
+pub const LOGI_DEVICETYPE_PERKEY_RGB: i32 = 2 << LOGI_DEVICETYPE_PERKEY_RGB_ORD;
 
-const LOGI_DEVICETYPE_ALL: i32 =
+pub const LOGI_DEVICETYPE_ALL: i32 =
     LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB | LOGI_DEVICETYPE_PERKEY_RGB;
 
 #[allow(non_snake_case, non_camel_case_types)]
-mod LogiLed {
+pub mod LogiLed {
     #[repr(C)]
     pub enum KeyName {
         ESC = 0x01,
@@ -151,13 +149,13 @@ mod LogiLed {
     }
 }
 
-#[link(name = "LogitechLEDLib", kind = "static")]
 extern "C" {
     #[link_name = "?LogiLedInit@@YA_NXZ"]
-    fn LogiLedInit() -> bool;
+    pub fn LogiLedInit() -> bool;
 
     #[link_name = "?LogiLedGetSdkVersion@@YA_NPEAH00@Z"]
-    fn LogiLedGetSdkVersion(majorNum: *mut i32, minorNum: *mut i32, buildNum: *mut i32) -> bool;
+    pub fn LogiLedGetSdkVersion(majorNum: *mut i32, minorNum: *mut i32, buildNum: *mut i32)
+        -> bool;
     // bool LogiLedGetConfigOptionNumber(const wchar_t *configPath, double *defaultValue);
     // bool LogiLedGetConfigOptionBool(const wchar_t *configPath, bool *defaultValue);
     // bool LogiLedGetConfigOptionColor(const wchar_t *configPath, int *defaultRed, int *defaultGreen, int *defaultBlue);
@@ -170,19 +168,23 @@ extern "C" {
 
     //Generic functions => Apply to any device type.
     #[link_name = "?LogiLedSetTargetDevice@@YA_NH@Z"]
-    fn LogiLedSetTargetDevice(targetDevice: i32) -> bool;
+    pub fn LogiLedSetTargetDevice(targetDevice: i32) -> bool;
 
     #[link_name = "?LogiLedSaveCurrentLighting@@YA_NXZ"]
-    fn LogiLedSaveCurrentLighting() -> bool;
+    pub fn LogiLedSaveCurrentLighting() -> bool;
 
     #[link_name = "?LogiLedSetLighting@@YA_NHHH@Z"]
-    fn LogiLedSetLighting(redPercentage: i32, greenPercentage: i32, bluePercentage: i32) -> bool;
+    pub fn LogiLedSetLighting(
+        redPercentage: i32,
+        greenPercentage: i32,
+        bluePercentage: i32,
+    ) -> bool;
 
     #[link_name = "?LogiLedRestoreLighting@@YA_NXZ"]
-    fn LogiLedRestoreLighting() -> bool;
+    pub fn LogiLedRestoreLighting() -> bool;
 
     #[link_name = "?LogiLedFlashLighting@@YA_NHHHHH@Z"]
-    fn LogiLedFlashLighting(
+    pub fn LogiLedFlashLighting(
         redPercentage: i32,
         greenPercentage: i32,
         bluePercentage: i32,
@@ -191,7 +193,7 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedPulseLighting@@YA_NHHHHH@Z"]
-    fn LogiLedPulseLighting(
+    pub fn LogiLedPulseLighting(
         redPercentage: i32,
         greenPercentage: i32,
         bluePercentage: i32,
@@ -200,14 +202,14 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedStopEffects@@YA_NXZ"]
-    fn LogiLedStopEffects();
+    pub fn LogiLedStopEffects();
 
     //Per-key functions => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
     #[link_name = "?LogiLedSetLightingFromBitmap@@YA_NQEAE@Z"]
-    fn LogiLedSetLightingFromBitmap(bitmap: *const u8) -> bool;
+    pub fn LogiLedSetLightingFromBitmap(bitmap: *const u8) -> bool;
 
     #[link_name = "?LogiLedSetLightingForKeyWithScanCode@@YA_NHHHH@Z"]
-    fn LogiLedSetLightingForKeyWithScanCode(
+    pub fn LogiLedSetLightingForKeyWithScanCode(
         keyCode: i32,
         redPercentage: i32,
         greenPercentage: i32,
@@ -215,7 +217,7 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedSetLightingForKeyWithHidCode@@YA_NHHHH@Z"]
-    fn LogiLedSetLightingForKeyWithHidCode(
+    pub fn LogiLedSetLightingForKeyWithHidCode(
         keyCode: i32,
         redPercentage: i32,
         greenPercentage: i32,
@@ -223,7 +225,7 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedSetLightingForKeyWithQuartzCode@@YA_NHHHH@Z"]
-    fn LogiLedSetLightingForKeyWithQuartzCode(
+    pub fn LogiLedSetLightingForKeyWithQuartzCode(
         keyCode: i32,
         redPercentage: i32,
         greenPercentage: i32,
@@ -231,7 +233,7 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedSetLightingForKeyWithKeyName@@YA_NW4KeyName@LogiLed@@HHH@Z"]
-    fn LogiLedSetLightingForKeyWithKeyName(
+    pub fn LogiLedSetLightingForKeyWithKeyName(
         keyName: LogiLed::KeyName,
         redPercentage: i32,
         greenPercentage: i32,
@@ -239,17 +241,17 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedSaveLightingForKey@@YA_NW4KeyName@LogiLed@@@Z"]
-    fn LogiLedSaveLightingForKey(keyName: LogiLed::KeyName) -> bool;
+    pub fn LogiLedSaveLightingForKey(keyName: LogiLed::KeyName) -> bool;
 
     #[link_name = "?LogiLedRestoreLightingForKey@@YA_NW4KeyName@LogiLed@@@Z"]
-    fn LogiLedRestoreLightingForKey(keyName: LogiLed::KeyName) -> bool;
+    pub fn LogiLedRestoreLightingForKey(keyName: LogiLed::KeyName) -> bool;
 
     #[link_name = "?LogiLedExcludeKeysFromBitmap@@YA_NPEAW4KeyName@LogiLed@@H@Z"]
-    fn LogiLedExcludeKeysFromBitmap(keyList: *const LogiLed::KeyName, listCount: i32);
+    pub fn LogiLedExcludeKeysFromBitmap(keyList: *const LogiLed::KeyName, listCount: i32);
 
     //Per-key effects => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
     #[link_name = "?LogiLedFlashSingleKey@@YA_NW4KeyName@LogiLed@@HHHHH@Z"]
-    fn LogiLedFlashSingleKey(
+    pub fn LogiLedFlashSingleKey(
         keyName: LogiLed::KeyName,
         redPercentage: i32,
         greenPercentage: i32,
@@ -259,7 +261,7 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedPulseSingleKey@@YA_NW4KeyName@LogiLed@@HHHHHHH_N@Z"]
-    fn LogiLedPulseSingleKey(
+    pub fn LogiLedPulseSingleKey(
         keyName: LogiLed::KeyName,
         startRedPercentage: i32,
         startGreenPercentage: i32,
@@ -272,11 +274,11 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedStopEffectsOnKey@@YA_NW4KeyName@LogiLed@@@Z"]
-    fn LogiLedStopEffectsOnKey(keyName: LogiLed::KeyName) -> bool;
+    pub fn LogiLedStopEffectsOnKey(keyName: LogiLed::KeyName) -> bool;
 
     //Zonal functions => only apply to devices with zones.
     #[link_name = "?LogiLedSetLightingForTargetZone@@YA_NW4DeviceType@LogiLed@@HHHH@Z"]
-    fn LogiLedSetLightingForTargetZone(
+    pub fn LogiLedSetLightingForTargetZone(
         deviceType: LogiLed::DeviceType,
         zone: i32,
         redPercentage: i32,
@@ -285,43 +287,5 @@ extern "C" {
     ) -> bool;
 
     #[link_name = "?LogiLedShutdown@@YAXXZ"]
-    fn LogiLedShutdown();
+    pub fn LogiLedShutdown();
 }
-
-// fn main() {
-//     unsafe {
-//         println!("Initialized: {}", LogiLedInit());
-
-//         let (mut maj, mut min, mut build) = (0, 0, 0);
-//         println!(
-//             "Retrieved SDK version: {}",
-//             LogiLedGetSdkVersion(&mut maj, &mut min, &mut build)
-//         );
-//         println!("Version: {}.{}.{}", maj, min, build);
-
-//         LogiLedSaveCurrentLighting();
-//         LogiLedSetLighting(0, 0, 0);
-
-//         let mut bitmap = [0; 504];
-//         for (i, bytes) in bitmap.chunks_mut(4).enumerate() {
-//             bytes[0] = (i as f64 / 126.0 * 255.0) as u8;
-//             bytes[1] = (255.0 - (i as f64 / 126.0 * 255.0)) as u8;
-//             bytes[3] = 255;
-//         }
-
-//         // LogiLedPulseSingleKey(LogiLed::KeyName::GLogo, 100, 0, 0, 0, 0, 0, 1000, true);
-
-//         // println!("{:?}", &bitmap[..]);
-//         println!("{}", LogiLedSetLightingFromBitmap(bitmap.as_ptr()));
-//         LogiLedFlashSingleKey(LogiLed::KeyName::Z, 100, 0, 0, LOGI_LED_DURATION_INFINITE, 300);
-//         // LogiLedPulseSingleKey(LogiLed::KeyName::X, 0, 0, 0, 100, 100, 0, 500, true);
-//         // LogiLedSetLightingForKeyWithKeyName(LogiLed::KeyName::F, 100, 0, 100);
-//         loop {}
-
-//         // LogiLedStopEffects();
-//         // LogiLedRestoreLighting();
-//         // LogiLedShutdown();
-//     }
-// }
-
-fn main() {}
