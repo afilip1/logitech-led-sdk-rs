@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+
+#[repr(C)]
 enum KeyName {
     ESC = 0x01,
     F1 = 0x3b,
@@ -135,12 +138,16 @@ extern "C" {
     //Generic functions => Apply to any device type.
     #[link_name = "?LogiLedSetTargetDevice@@YA_NH@Z"]
     fn LogiLedSetTargetDevice(targetDevice: i32) -> bool;
+
     #[link_name = "?LogiLedSaveCurrentLighting@@YA_NXZ"]
     fn LogiLedSaveCurrentLighting() -> bool;
+
     #[link_name = "?LogiLedSetLighting@@YA_NHHH@Z"]
     fn LogiLedSetLighting(redPercentage: i32, greenPercentage: i32, bluePercentage: i32) -> bool;
+
     #[link_name = "?LogiLedRestoreLighting@@YA_NXZ"]
     fn LogiLedRestoreLighting() -> bool;
+
     #[link_name = "?LogiLedFlashLighting@@YA_NHHHHH@Z"]
     fn LogiLedFlashLighting(
         redPercentage: i32,
@@ -149,6 +156,7 @@ extern "C" {
         milliSecondsDuration: i32,
         milliSecondsInterval: i32,
     ) -> bool;
+
     #[link_name = "?LogiLedPulseLighting@@YA_NHHHHH@Z"]
     fn LogiLedPulseLighting(
         redPercentage: i32,
@@ -157,8 +165,49 @@ extern "C" {
         milliSecondsDuration: i32,
         milliSecondsInterval: i32,
     ) -> bool;
+
     #[link_name = "?LogiLedStopEffects@@YA_NXZ"]
     fn LogiLedStopEffects();
+
+    //Per-key functions => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
+    // bool LogiLedSetLightingFromBitmap(unsigned char bitmap[]);
+    // bool LogiLedSetLightingForKeyWithScanCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
+    // bool LogiLedSetLightingForKeyWithHidCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
+    // bool LogiLedSetLightingForKeyWithQuartzCode(int keyCode, int redPercentage, int greenPercentage, int bluePercentage);
+    // bool LogiLedSetLightingForKeyWithKeyName(LogiLed::KeyName keyName, int redPercentage, int greenPercentage, int bluePercentage);
+    // bool LogiLedSaveLightingForKey(LogiLed::KeyName keyName);
+    // bool LogiLedRestoreLightingForKey(LogiLed::KeyName keyName);
+    // bool LogiLedExcludeKeysFromBitmap(LogiLed::KeyName *keyList, int listCount);
+
+    //Per-key effects => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
+    #[link_name = "?LogiLedFlashSingleKey@@YA_NW4KeyName@LogiLed@@HHHHH@Z"]
+    fn LogiLedFlashSingleKey(
+        keyName: KeyName,
+        redPercentage: i32,
+        greenPercentage: i32,
+        bluePercentage: i32,
+        msDuration: i32,
+        msInterval: i32,
+    ) -> bool;
+
+    #[link_name = "?LogiLedPulseSingleKey@@YA_NW4KeyName@LogiLed@@HHHHHHH_N@Z"]
+    fn LogiLedPulseSingleKey(
+        keyName: KeyName,
+        startRedPercentage: i32,
+        startGreenPercentage: i32,
+        startBluePercentage: i32,
+        finishRedPercentage: i32,
+        finishGreenPercentage: i32,
+        finishBluePercentage: i32,
+        msDuration: i32,
+        isInfinite: bool,
+    ) -> bool;
+
+    #[link_name = "?LogiLedStopEffectsOnKey@@YA_NW4KeyName@LogiLed@@@Z"]
+    fn LogiLedStopEffectsOnKey(keyName: KeyName) -> bool;
+
+    #[link_name = "?LogiLedShutdown@@YAXXZ"]
+    fn LogiLedShutdown();
 }
 
 fn main() {
@@ -172,10 +221,15 @@ fn main() {
         );
         println!("Version: {}.{}.{}", maj, min, build);
 
-        println!(
-            "Set lighting to flash blue for 5 seconds: {}",
-            LogiLedFlashLighting(0, 0, 100, 0, 100)
-        );
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        LogiLedSaveCurrentLighting();
+        LogiLedSetLighting(0, 0, 0);
+
+        LogiLedFlashSingleKey(KeyName::Z, 100, 0, 0, 0, 300);
+        LogiLedPulseSingleKey(KeyName::X, 0, 0, 0, 100, 100, 0, 500, true);
+        loop {}
+
+        // LogiLedStopEffects();
+        // LogiLedRestoreLighting();
+        // LogiLedShutdown();
     }
 }
