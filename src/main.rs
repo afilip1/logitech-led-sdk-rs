@@ -131,10 +131,34 @@ extern "C" {
 
     #[link_name = "?LogiLedGetSdkVersion@@YA_NPEAH00@Z"]
     fn LogiLedGetSdkVersion(majorNum: *mut i32, minorNum: *mut i32, buildNum: *mut i32) -> bool;
-    
+
+    //Generic functions => Apply to any device type.
+    #[link_name = "?LogiLedSetTargetDevice@@YA_NH@Z"]
+    fn LogiLedSetTargetDevice(targetDevice: i32) -> bool;
+    #[link_name = "?LogiLedSaveCurrentLighting@@YA_NXZ"]
+    fn LogiLedSaveCurrentLighting() -> bool;
     #[link_name = "?LogiLedSetLighting@@YA_NHHH@Z"]
     fn LogiLedSetLighting(redPercentage: i32, greenPercentage: i32, bluePercentage: i32) -> bool;
-
+    #[link_name = "?LogiLedRestoreLighting@@YA_NXZ"]
+    fn LogiLedRestoreLighting() -> bool;
+    #[link_name = "?LogiLedFlashLighting@@YA_NHHHHH@Z"]
+    fn LogiLedFlashLighting(
+        redPercentage: i32,
+        greenPercentage: i32,
+        bluePercentage: i32,
+        milliSecondsDuration: i32,
+        milliSecondsInterval: i32,
+    ) -> bool;
+    #[link_name = "?LogiLedPulseLighting@@YA_NHHHHH@Z"]
+    fn LogiLedPulseLighting(
+        redPercentage: i32,
+        greenPercentage: i32,
+        bluePercentage: i32,
+        milliSecondsDuration: i32,
+        milliSecondsInterval: i32,
+    ) -> bool;
+    #[link_name = "?LogiLedStopEffects@@YA_NXZ"]
+    fn LogiLedStopEffects();
 }
 
 fn main() {
@@ -142,10 +166,16 @@ fn main() {
         println!("Initialized: {}", LogiLedInit());
 
         let (mut maj, mut min, mut build) = (0, 0, 0);
-        println!("Retrieved SDK version: {}", LogiLedGetSdkVersion(&mut maj, &mut min, &mut build));
-        println!("Version: {}.{}.{}", maj, min, build);     
+        println!(
+            "Retrieved SDK version: {}",
+            LogiLedGetSdkVersion(&mut maj, &mut min, &mut build)
+        );
+        println!("Version: {}.{}.{}", maj, min, build);
 
-        println!("Set lighting to red: {}", LogiLedSetLighting(100, 0, 0));
-        loop {}
+        println!(
+            "Set lighting to flash blue for 5 seconds: {}",
+            LogiLedFlashLighting(0, 0, 100, 0, 100)
+        );
+        std::thread::sleep(std::time::Duration::from_secs(5));
     }
 }
