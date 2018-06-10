@@ -1,3 +1,7 @@
+#![allow(non_camel_case_types, non_snake_case)]
+
+pub type wchar_t = u16;
+
 pub const LOGI_LED_BITMAP_WIDTH: i32 = 21;
 pub const LOGI_LED_BITMAP_HEIGHT: i32 = 6;
 pub const LOGI_LED_BITMAP_BYTES_PER_KEY: i32 = 4;
@@ -18,7 +22,6 @@ pub const LOGI_DEVICETYPE_PERKEY_RGB: i32 = 2 << LOGI_DEVICETYPE_PERKEY_RGB_ORD;
 pub const LOGI_DEVICETYPE_ALL: i32 =
     LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB | LOGI_DEVICETYPE_PERKEY_RGB;
 
-#[allow(non_snake_case, non_camel_case_types)]
 pub mod LogiLed {
     #[repr(C)]
     pub enum KeyName {
@@ -156,15 +159,63 @@ extern "C" {
     #[link_name = "?LogiLedGetSdkVersion@@YA_NPEAH00@Z"]
     pub fn LogiLedGetSdkVersion(majorNum: *mut i32, minorNum: *mut i32, buildNum: *mut i32)
         -> bool;
-    // bool LogiLedGetConfigOptionNumber(const wchar_t *configPath, double *defaultValue);
-    // bool LogiLedGetConfigOptionBool(const wchar_t *configPath, bool *defaultValue);
-    // bool LogiLedGetConfigOptionColor(const wchar_t *configPath, int *defaultRed, int *defaultGreen, int *defaultBlue);
-    // bool LogiLedGetConfigOptionRect(const wchar_t *configPath, int *defaultX, int *defaultY, int *defaultWidth, int *defaultHeight);
-    // bool LogiLedGetConfigOptionString(const wchar_t *configPath, wchar_t *defaultValue, int bufferSize);
-    // bool LogiLedGetConfigOptionKeyInput(const wchar_t *configPath, wchar_t *defaultValue, int bufferSize);
-    // bool LogiLedGetConfigOptionSelect(const wchar_t *configPath, wchar_t *defaultValue, int *valueSize, const wchar_t *values, int bufferSize);
-    // bool LogiLedGetConfigOptionRange(const wchar_t *configPath, int *defaultValue, int min, int max);
-    // bool LogiLedSetConfigOptionLabel(const wchar_t *configPath, wchar_t *label);
+    #[link_name = "?LogiLedGetConfigOptionNumber@@YA_NPEB_WPEAN@Z"]
+    pub fn LogiLedGetConfigOptionNumber(configPath: *const wchar_t, defaultValue: *mut f64) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionBool@@YA_NPEB_WPEA_N@Z"]
+    pub fn LogiLedGetConfigOptionBool(configPath: *const wchar_t, defaultValue: *mut bool) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionColor@@YA_NPEB_WPEAH11@Z"]
+    pub fn LogiLedGetConfigOptionColor(
+        configPath: *const wchar_t,
+        defaultRed: *mut i32,
+        defaultGreen: *mut i32,
+        defaultBlue: *mut i32,
+    ) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionRect@@YA_NPEB_WPEAH111@Z"]
+    pub fn LogiLedGetConfigOptionRect(
+        configPath: *const wchar_t,
+        defaultX: *mut i32,
+        defaultY: *mut i32,
+        defaultWidth: *mut i32,
+        defaultHeight: *mut i32,
+    ) -> bool;
+    
+    // this function isn't exported by the static library???
+    // #[link_name = ""]
+    // fn LogiLedGetConfigOptionString(
+    //     configPath: *const wchar_t,
+    //     defaultValue: *mut wchar_t,
+    //     bufferSize: i32,
+    // ) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionKeyInput@@YA_NPEB_WPEA_WH@Z"]
+    pub fn LogiLedGetConfigOptionKeyInput(
+        configPath: *const wchar_t,
+        defaultValue: *mut wchar_t,
+        bufferSize: i32,
+    ) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionSelect@@YA_NPEB_WPEA_WPEAH0H@Z"]
+    pub fn LogiLedGetConfigOptionSelect(
+        configPath: *const wchar_t,
+        defaultValue: *mut wchar_t,
+        valueSize: *mut i32,
+        values: *const wchar_t,
+        bufferSize: i32,
+    ) -> bool;
+    
+    #[link_name = "?LogiLedGetConfigOptionRange@@YA_NPEB_WPEAHHH@Z"]
+    pub fn LogiLedGetConfigOptionRange(
+        configPath: *const wchar_t,
+        defaultValue: *mut i32,
+        min: i32,
+        max: i32,
+    ) -> bool;
+    
+    #[link_name = "?LogiLedSetConfigOptionLabel@@YA_NPEB_WPEA_W@Z"]
+    pub fn LogiLedSetConfigOptionLabel(configPath: *const wchar_t, label: *mut wchar_t) -> bool;
 
     //Generic functions => Apply to any device type.
     #[link_name = "?LogiLedSetTargetDevice@@YA_NH@Z"]
