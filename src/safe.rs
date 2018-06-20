@@ -1,17 +1,31 @@
 use raw;
-use std::{self, time::Duration};
+use std::{
+    fmt::{self, Display, Formatter},
+    result,
+    time::Duration,
+};
 
 macro_rules! try_unsafe {
     ($e:expr) => {
         if unsafe { $e } {
             Ok(())
         } else {
-            Err(())
+            Err(Error::Unknown)
         }
     };
 }
 
-type Result = std::result::Result<(), ()>;
+type Result = result::Result<(), Error>;
+
+#[derive(Debug)]
+pub enum Error {
+    Unknown,
+    BitmapTooSmall,
+}
+
+fn percentage(x: u8) -> i32 {
+    i32::from(x / 255 * 100)
+}
 
 #[derive(Default)]
 pub struct Version {
@@ -20,8 +34,8 @@ pub struct Version {
     pub build: i32,
 }
 
-impl std::fmt::Display for Version {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl Display for Version {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "v{}.{}.{}", self.major, self.minor, self.build)
     }
 }
@@ -31,44 +45,43 @@ impl std::fmt::Display for Version {
 pub struct LogiLedSdk(());
 
 impl LogiLedSdk {
-    pub fn init() -> std::result::Result<LogiLedSdk, ()> {
+    pub fn init() -> result::Result<LogiLedSdk, Error> {
         if unsafe { raw::LogiLedInit() } {
             Ok(LogiLedSdk(()))
         } else {
-            Err(())
+            Err(Error::Unknown)
         }
     }
 
-    pub fn get_sdk_version(&self) -> std::result::Result<Version, ()> {
+    pub fn get_sdk_version(&self) -> result::Result<Version, Error> {
         let mut v = Version::default();
         if unsafe { raw::LogiLedGetSdkVersion(&mut v.major, &mut v.minor, &mut v.build) } {
             Ok(v)
         } else {
-            Err(())
+            Err(Error::Unknown)
         }
     }
 
-    pub fn save_current_lighting() -> Result {
+    pub fn save_current_lighting(&self) -> Result {
         try_unsafe!{ raw::LogiLedSaveCurrentLighting() }
     }
 
-    pub fn set_lighting(red: u8, green: u8, blue: u8) -> Result {
-        let percentage = |x| i32::from(x / 255 * 100);
+    pub fn set_lighting(&self, red: u8, green: u8, blue: u8) -> Result {
         try_unsafe!{ raw::LogiLedSetLighting(percentage(red), percentage(green), percentage(blue)) }
     }
 
-    pub fn restore_lighting() -> Result {
+    pub fn restore_lighting(&self) -> Result {
         try_unsafe!{ raw::LogiLedRestoreLighting() }
     }
 
     pub fn flash_lighting(
+        &self,
         red: u8,
         green: u8,
         blue: u8,
         duration: Duration,
         interval: Duration,
     ) -> Result {
-        let percentage = |x| i32::from(x / 255 * 100);
         try_unsafe!{
             raw::LogiLedFlashLighting(
                 percentage(red),
@@ -81,13 +94,13 @@ impl LogiLedSdk {
     }
 
     pub fn pulse_lighting(
+        &self,
         red: u8,
         green: u8,
         blue: u8,
         duration: Duration,
         interval: Duration,
     ) -> Result {
-        let percentage = |x| i32::from(x / 255 * 100);
         try_unsafe!{
             raw::LogiLedPulseLighting(
                 percentage(red),
@@ -99,16 +112,16 @@ impl LogiLedSdk {
         }
     }
 
-    pub fn stop_effects() -> Result {
+    pub fn stop_effects(&self) -> Result {
         try_unsafe!{ raw::LogiLedStopEffects() }
     }
 
     pub fn set_lighting_from_bitmap(&self, bitmap: &[u8]) -> Result {
         if bitmap.len() < raw::LOGI_LED_BITMAP_SIZE as usize {
-            return Err(()); //TODO: meaningful error
+            Err(Error::BitmapTooSmall)
+        } else {
+            try_unsafe!{ raw::LogiLedSetLightingFromBitmap(bitmap.as_ptr()) }
         }
-
-        try_unsafe!{ raw::LogiLedSetLightingFromBitmap(bitmap.as_ptr()) }
     }
 }
 
